@@ -1,24 +1,23 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongodbTest.Model;
+using MongodbTest.Services.Interface;
+
 namespace MongodbTest.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
 
-        private readonly IMongoCollection<UserDetail> _userCollection;
-
-        public UserService(
-     IOptions<UserDatabaseSetting> userDatabaseSettings)
+        private readonly IMongoCollection<UserDetail>? _userCollection;
+        //private readonly IConfiguration _configuration;
+        //private readonly MongoClient _mongoclient;
+        public UserService(MongoDbService mongoDbService)
         {
-            var mongoClient = new MongoClient(
-                userDatabaseSettings.Value.ConnectionString);
+            //_configuration = configuration;
+            //_mongoclient = new MongoClient(_configuration["Database:ConnectionString"]);
+            //var _mongoDatabase = _mongoclient.GetDatabase(_configuration["Database:DatabaseName"]);
+            _userCollection = mongoDbService.Database?.GetCollection<UserDetail>("userdetails");
 
-            var mongoDatabase = mongoClient.GetDatabase(
-                userDatabaseSettings.Value.DatabaseName);
-
-            _userCollection = mongoDatabase.GetCollection<UserDetail>(
-                userDatabaseSettings.Value.CollectionName);
         }
 
         public async Task<List<UserDetail>> GetAsync() =>
